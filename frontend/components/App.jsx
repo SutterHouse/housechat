@@ -10,8 +10,7 @@ class App extends Component {
     super(props);
     this.state = {
       messages: [],
-      username: 'anon',
-      room: 'lobby'
+      username: 'anon'
     };
   }
 
@@ -45,16 +44,15 @@ class App extends Component {
   }
 
   sendNewMessage(messageText) {
-    var ws = this.props.webSocketServer;
+    var url = this.props.httpServer + '/messages';
 
     var message = {
-      username: this.state.username,
-      text: messageText,
-      room: this.state.room
+      handle: this.state.username,
+      text: messageText
     };
 
     console.log('message sending:', messageText);
-    ws.send(JSON.stringify(message));
+    axios.post(url, message);
   }
 
   updateUsername (e) {
