@@ -2,7 +2,7 @@ import React from 'react';
 
 const Message = (props) => (
   <div className='message-container'>
-    { props.message.username }: { props.message.text }
+    { JSON.stringify(props.message) }: { props.message.text }
   </div>
 )
 

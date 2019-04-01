@@ -44,7 +44,7 @@ class App extends Component {
   }
 
   sendNewMessage(messageText) {
-    var url = this.props.httpServer + '/messages';
+    var url = this.props.httpServer;
 
     var message = {
       handle: this.state.username,
