@@ -11,4 +11,10 @@
 
 class Message < ActiveRecord::Base
   belongs_to :user
+
+  def as_json
+    hash = self.as_json
+    hash[:handle] = self.user.handle
+    handle
+  end
 end
