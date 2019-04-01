@@ -12,9 +12,9 @@
 class Message < ActiveRecord::Base
   belongs_to :user
 
-  def as_json
+  def serialize
     hash = self.as_json
-    hash[:handle] = self.user.handle
-    handle
+    hash[:user_handle] = self.user.handle
+    hash
   end
 end
