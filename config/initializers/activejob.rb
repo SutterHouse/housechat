@@ -1,0 +1,1 @@
+PersistMessagesJob.perform_later

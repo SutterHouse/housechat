@@ -8,11 +8,7 @@ class MessagesController < ApplicationController
   def create
     # TODO validate request params
 
-    user = User.where(handle: params[:handle]).first_or_create
-    Message.create(
-      text: params[:text],
-      user: user
-    )
+    $redis.XADD("messagestream", "*", "text", params[:text], "handle", params[:handle])
 
     head :ok
   end

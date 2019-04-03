@@ -6,6 +6,7 @@
 
 /app/assets/javascripts/bundle.js
 .DS_Store
+dump.rdb
 
 # Ignore bundler config.
 /.bundle
