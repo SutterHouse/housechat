@@ -17,6 +17,28 @@ class App extends Component {
   componentDidMount() {
     this.fetchPrevMessages();
     this.connectToWebSocket();
+    window.setInterval(this.fetchNewMessages.bind(this), 1000);
+  }
+
+  incrementId(redisId) {
+    var idArr = redisId.split('-');
+    var lastNum = window.parseInt(redisId[1]) + 1;
+    idArr[1] = lastNum;
+    return idArr.join('-');
+  }
+
+  fetchNewMessages() {
+    console.log('FETCHING...');
+    if (!this.state.messages.length) { return; }
+    
+    var url = this.props.httpServer + '/recent/' + this.incrementId(this.state.messages[this.state.messages.length - 1].id);
+
+    axios.get(url).then(result => {
+      console.log('FETCHED:', result.data);
+      if (result.data.length) {
+        this.setState({ messages: this.state.messages.concat(result.data) }, this.scrollToBottom);
+      }
+    });
   }
 
   fetchPrevMessages() {
@@ -28,14 +50,14 @@ class App extends Component {
   }
 
   connectToWebSocket() {
-    var socket = this.props.webSocketServer;
+    // var socket = this.props.webSocketServer;
 
-    socket.on('connect', () => {
-      socket.on('message', (message) => {
-        console.log('message received:', message);
-        this.setState({messages: this.state.messages.concat(JSON.parse(message))}, this.scrollToBottom);
-      });
-    });
+    // socket.on('connect', () => {
+    //   socket.on('message', (message) => {
+    //     console.log('message received:', message);
+    //     this.setState({messages: this.state.messages.concat(JSON.parse(message))}, this.scrollToBottom);
+    //   });
+    // });
   }
 
   scrollToBottom() {

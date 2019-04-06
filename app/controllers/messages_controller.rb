@@ -3,7 +3,14 @@ class MessagesController < ApplicationController
   
   def index
     messages = $redis.XREVRANGE("messagestream", "+", "-", "COUNT", 100)
-    parsed_messages = messages.map {|id, message| {user_handle: message[3], text: message[1]}}
+    parsed_messages = messages.map {|id, message| {user_handle: message[3], text: message[1], id: id}}
+    parsed_messages = parsed_messages.reverse
+    render json: parsed_messages.to_json
+  end
+
+  def recent
+    messages = $redis.XRANGE("messagestream", params[:last_redis_id], "+", "COUNT", 100)
+    parsed_messages = messages.map {|id, message| {user_handle: message[3], text: message[1], id: id}}
     render json: parsed_messages.to_json
   end
 
