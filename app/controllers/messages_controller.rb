@@ -2,22 +2,30 @@ class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
   
   def index
-    messages = $redis.XREVRANGE("messagestream", "+", "-", "COUNT", 100)
-    parsed_messages = messages.map {|id, message| {user_handle: message[3], text: message[1], id: id}}
-    parsed_messages = parsed_messages.reverse
-    render json: parsed_messages.to_json
-  end
-
-  def recent
-    messages = $redis.XRANGE("messagestream", params[:last_redis_id], "+", "COUNT", 100)
-    parsed_messages = messages.map {|id, message| {user_handle: message[3], text: message[1], id: id}}
-    render json: parsed_messages.to_json
+    render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
   end
 
   def create
     # TODO validate request params
 
-    $redis.XADD("messagestream", "*", "text", params[:text], "handle", params[:handle])
+    result = $redis.XADD("messagestream", "*", "text", params[:text], "handle", params[:handle]);
+    redis_primary_id, redis_secondary_id = result.split("-")
+
+    user = User.where(handle: params[:handle]).first_or_create
+
+    Message.create(
+        text: params[:text],
+        user: user,
+        redis_primary_id: redis_primary_id,
+        redis_secondary_id: redis_secondary_id
+      )
+
+      # broadcast message
+      serialized_message = {
+        user_handle: params[:handle],
+        text: params[:text]
+      }
+      ActionCable.server.broadcast 'messages_stream_channel', serialized_message.as_json
 
     head :ok
   end

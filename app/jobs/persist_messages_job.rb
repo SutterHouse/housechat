@@ -1,10 +1,15 @@
 class PersistMessagesJob < ActiveJob::Base
+  queue_as :default
+
   def perform
     last_primary_id = Message.maximum(:redis_primary_id) || 0
     last_secondary_id = Message.where(redis_primary_id: last_primary_id).maximum(:redis_secondary_id) || 0
     last_id = "#{last_primary_id}-#{last_secondary_id}"
 
-    messages = $redis.XREAD("COUNT", 100, "STREAMS", "messagestream", last_id)[0][1]
+    result = $redis.XREAD("COUNT", 100, "STREAMS", "messagestream", last_id)
+    return if result.blank?
+
+    messages = result[0][1];
     puts "#{messages}"
     messages.each do |id, message|
       puts "message is #{message}"
@@ -18,8 +23,6 @@ class PersistMessagesJob < ActiveJob::Base
       )
     end
 
-    # TODO: Q_Q why doesn't this work?
-    # PersistMessagesJob.set(wait: 10.seconds).perform_later
   end
 end
 
