@@ -19,7 +19,11 @@ gem 'uglifier', '>= 1.3.0'
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 
+<<<<<<< Updated upstream
 gem 'sendgrid-ruby'
+=======
+gem 'twilio-ruby'
+>>>>>>> Stashed changes
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.2'
