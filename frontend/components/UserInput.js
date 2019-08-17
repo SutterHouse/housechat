@@ -22,7 +22,8 @@ class UserInput extends React.Component {
     return (
       <div className='user-input-container'>
         <form onSubmit={this.submitHandler.bind(this)}>
-          <input 
+          <input
+            maxLength={500}
             className='input-field' 
             type='text' value={this.state.inputValue} 
             onChange={this.inputChangeHandler.bind(this)} 

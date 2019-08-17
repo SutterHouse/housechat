@@ -7,6 +7,7 @@ class MessagesController < ApplicationController
 
   def create
     # TODO validate request params
+    return if params[:text].length > 500
 
     result = $redis.XADD("messagestream", "*", "text", params[:text], "handle", params[:handle]);
     redis_primary_id, redis_secondary_id = result.split("-")

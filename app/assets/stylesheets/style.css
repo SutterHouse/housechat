@@ -55,6 +55,7 @@ body {
   margin-bottom: 0.5em;
   background-color: #f4f4f4;
   border-radius: 7.5px;
+  text-overflow: ellipsis;
 }
 
 .user-input-container form {
