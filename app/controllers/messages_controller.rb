@@ -1,8 +1,10 @@
 require 'email_sender'
+require 'sms_sender'
 
 class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
   include EmailSender
+  include SmsSender
   
   def index
     render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
@@ -18,25 +20,29 @@ class MessagesController < ApplicationController
     user = User.where(handle: params[:handle]).first_or_create
     mentioned_users = parse_for_mentions(params[:text])
 
+    # create message
+    Message.create(
+      text: params[:text],
+      user: user,
+      redis_primary_id: redis_primary_id,
+      redis_secondary_id: redis_secondary_id
+    )
+
+    # broadcast message
+    serialized_message = {
+      user_handle: params[:handle],
+      text: params[:text]
+    }
+    ActionCable.server.broadcast 'messages_stream_channel', serialized_message.as_json
+
+    # handle integrated notifications
     mentioned_users.each do |u|
       if u.email
-        send_email(params[:handle], u.email, params[:text])
+        send_email(params[:handle], u.email, params[:text]) if u.email
+        send_sms(params[:handle], u.phone, params[:text]) if u.phone
       end
     end
-    Message.create(
-        text: params[:text],
-        user: user,
-        redis_primary_id: redis_primary_id,
-        redis_secondary_id: redis_secondary_id
-      )
-
-      # broadcast message
-      serialized_message = {
-        user_handle: params[:handle],
-        text: params[:text]
-      }
-      ActionCable.server.broadcast 'messages_stream_channel', serialized_message.as_json
-
+    
     head :ok
   end
 
