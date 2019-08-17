@@ -13,6 +13,12 @@ class MessagesController < ApplicationController
     redis_primary_id, redis_secondary_id = result.split("-")
 
     user = User.where(handle: params[:handle]).first_or_create
+    mentioned_users = parse_for_mentions(params[:text])
+
+    mentioned_users.each do |u|
+      # integrations here
+
+    end
 
     Message.create(
         text: params[:text],
@@ -29,5 +35,11 @@ class MessagesController < ApplicationController
       ActionCable.server.broadcast 'messages_stream_channel', serialized_message.as_json
 
     head :ok
+  end
+
+  def parse_for_mentions(text) 
+    regex = /@\w+/
+    handles = text.scan(regex).map{|h| h[1..-1]}
+    return User.where(handle: handles)
   end
 end
