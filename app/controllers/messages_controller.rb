@@ -19,7 +19,6 @@ class MessagesController < ApplicationController
     mentioned_users = parse_for_mentions(params[:text])
 
     mentioned_users.each do |u|
-      # integrations here
       if u.email
         send_email(params[:handle], u.email, params[:text])
       end
