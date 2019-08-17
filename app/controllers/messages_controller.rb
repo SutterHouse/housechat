@@ -1,8 +1,10 @@
 require 'email_sender'
+require 'slack_sender'
 
 class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
   include EmailSender
+  include SlackSender
   
   def index
     render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
@@ -21,6 +23,9 @@ class MessagesController < ApplicationController
     mentioned_users.each do |u|
       if u.email
         send_email(params[:handle], u.email, params[:text])
+      end
+      if u.slack
+        send_slack_message(params[:handle], u.slack, params[:text])
       end
     end
     Message.create(
