@@ -5,6 +5,5 @@ class MessagesStreamChannel < ApplicationCable::Channel
 
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed
-    puts "UNSUB DETECTED"
   end
 end
