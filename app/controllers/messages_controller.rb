@@ -1,5 +1,8 @@
+require 'email_sender'
+
 class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
+  include EmailSender
   
   def index
     render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
@@ -16,10 +19,10 @@ class MessagesController < ApplicationController
     mentioned_users = parse_for_mentions(params[:text])
 
     mentioned_users.each do |u|
-      # integrations here
-
+      if u.email
+        send_email(params[:handle], u.email, params[:text])
+      end
     end
-
     Message.create(
         text: params[:text],
         user: user,
