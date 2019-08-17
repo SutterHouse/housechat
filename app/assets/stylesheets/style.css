@@ -39,7 +39,7 @@ body {
 }
 
 .message-list-container {
-
+  overflow: auto;
   flex-grow: 1;
   flex-shrink: 1;
 
@@ -49,19 +49,15 @@ body {
 }
 
 .message-list {
-  height: 100%;
   width: 75%;
-
-  overflow: scroll;
+  height: 100%;
 }
 
 .message-container {
+  width: 100%;
+  margin-bottom: 0.5em;
   background-color: #f4f4f4;
   border-radius: 7.5px;
-
-  margin-bottom: 0.5em;
-
-  width: 100%;
 }
 
 .user-input-container form {

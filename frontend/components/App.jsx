@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { ActionCableConsumer } from 'react-actioncable-provider';
 import MessageList from './MessageList.js';
 import UserInput from './UserInput.js';
 import NavBar from './NavBar.js';
+
 
 
 class App extends Component {
@@ -16,35 +18,28 @@ class App extends Component {
 
   componentDidMount() {
     this.fetchPrevMessages();
-    this.connectToWebSocket();
   }
 
   fetchPrevMessages() {
-    var url = this.props.httpServer;
-    axios.get(url).then(result => {
-      console.log(result.data);
+    const { httpServerUrl } = this.props;
+    axios.get(httpServerUrl).then(result => {
+      console.log('fetch:', result.data);
       this.setState({ messages: result.data }, this.scrollToBottom);
     })
   }
 
-  connectToWebSocket() {
-    var socket = this.props.webSocketServer;
-
-    socket.on('connect', () => {
-      socket.on('message', (message) => {
-        console.log('message received:', message);
-        this.setState({messages: this.state.messages.concat(JSON.parse(message))}, this.scrollToBottom);
-      });
-    });
+  handleReceivedMessage(response) {
+    console.log("received", response);
+    this.setState({messages: this.state.messages.concat(response)}, this.scrollToBottom);
   }
 
   scrollToBottom() {
-    var msgs = document.getElementsByClassName('message-list')[0];
+    var msgs = document.getElementsByClassName('message-list-container')[0];
     msgs.scrollTop = msgs.scrollHeight - msgs.clientHeight;
   }
 
   sendNewMessage(messageText) {
-    var url = this.props.httpServer;
+    var url = this.props.httpServerUrl;
 
     var message = {
       handle: this.state.username,
@@ -64,8 +59,15 @@ class App extends Component {
   }
 
   render() {
+    if (!this.acc) {
+      this.acc = <ActionCableConsumer
+        channel={{ channel: 'MessagesStreamChannel' }}
+        onReceived={this.handleReceivedMessage.bind(this)}
+      />;
+    }
   return (
     <div className='app-container'>
+      { this.acc }
       <NavBar updateUsername={this.updateUsername.bind(this)}/>
       <MessageList messages = {this.state.messages}/>
       <UserInput sendNewMessage={this.sendNewMessage.bind(this)}/>
