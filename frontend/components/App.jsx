@@ -23,13 +23,11 @@ class App extends Component {
   fetchPrevMessages() {
     const { httpServerUrl } = this.props;
     axios.get(httpServerUrl).then(result => {
-      console.log('fetch:', result.data);
       this.setState({ messages: result.data }, this.scrollToBottom);
     })
   }
 
   handleReceivedMessage(response) {
-    console.log("received", response);
     this.setState({messages: this.state.messages.concat(response)}, this.scrollToBottom);
   }
 
@@ -46,7 +44,6 @@ class App extends Component {
       text: messageText
     };
 
-    console.log('message sending:', messageText);
     axios.post(url, message);
   }
 

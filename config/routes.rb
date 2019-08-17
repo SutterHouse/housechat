@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root 'frontend#index'
 
   resources :messages, only: [:index, :create]
+  get "/messages/recent/:last_redis_id", to: "messages#recent"
 
   resources :users, only: [:create, :show]
 
