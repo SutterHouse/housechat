@@ -4,7 +4,7 @@ require 'sendgrid-ruby'
 include SendGrid
 
 module EmailSender
-  @@sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
+  @@sg = SendGrid::API.new(api_key: Rails.application.credentials.SENDGRID_API_KEY)
   def send_email(sender_name, recipient_email, message)
     from = Email.new(email: 'housechatluxe@gmail.com')
     to = Email.new(email: recipient_email)
