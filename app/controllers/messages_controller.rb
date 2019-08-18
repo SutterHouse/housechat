@@ -39,10 +39,12 @@ class MessagesController < ApplicationController
     mentioned_users.each do |u|
       if u.email
         send_email(params[:handle], u.email, params[:text]) if u.email
+      end
+      if u.slack
         send_sms(params[:handle], u.phone, params[:text]) if u.phone
       end
     end
-    
+
     head :ok
   end
 
