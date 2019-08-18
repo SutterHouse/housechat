@@ -1,4 +1,7 @@
 module MessagesControllerHelper
+  def isValidBrowser(headers)
+    return headers["User-Agent"].include?("Chrome")
+  end
   def isValidMessage(message)
     if message.length < 1 || message.length > 500
       return false

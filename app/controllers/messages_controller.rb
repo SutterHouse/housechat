@@ -15,6 +15,7 @@ class MessagesController < ApplicationController
   end
 
   def create
+    return if !isValidBrowser(request.headers)
     return if !isValidHandle(params[:handle])
     return if !isValidMessage(params[:text])
 
