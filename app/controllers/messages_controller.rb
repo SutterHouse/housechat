@@ -1,20 +1,22 @@
 require 'email_sender'
 require 'slack_sender'
 require 'sms_sender'
+require 'messages_controller_helper'
 
 class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
   include EmailSender
   include SlackSender
   include SmsSender
+  include MessagesControllerHelper
   
   def index
     render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
   end
 
   def create
-    # TODO validate request params
-    return if params[:text].length > 500
+    return if !isValidHandle(params[:handle])
+    return if !isValidMessage(params[:text])
 
     result = $redis.XADD("messagestream", "*", "text", params[:text], "handle", params[:handle]);
     redis_primary_id, redis_secondary_id = result.split("-")
