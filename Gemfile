@@ -20,6 +20,7 @@ gem 'sidekiq'
 gem 'sidekiq-scheduler'
 
 gem 'sendgrid-ruby'
+gem 'twilio-ruby'
 
 gem 'http'
 
