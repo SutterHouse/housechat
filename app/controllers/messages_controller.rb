@@ -1,9 +1,11 @@
 require 'email_sender'
+require 'slack_sender'
 require 'sms_sender'
 
 class MessagesController < ApplicationController
   protect_from_forgery with: :null_session
   include EmailSender
+  include SlackSender
   include SmsSender
   
   def index
@@ -39,6 +41,9 @@ class MessagesController < ApplicationController
     mentioned_users.each do |u|
       if u.email
         send_email(params[:handle], u.email, params[:text])
+      end
+      if u.slack
+        send_slack_message(params[:handle], u.slack, params[:text])
       end
       if u.phone
         send_sms(params[:handle], u.phone, params[:text])
