@@ -38,10 +38,10 @@ class MessagesController < ApplicationController
     # handle integrated notifications
     mentioned_users.each do |u|
       if u.email
-        send_email(params[:handle], u.email, params[:text]) if u.email
+        send_email(params[:handle], u.email, params[:text])
       end
-      if u.slack
-        send_sms(params[:handle], u.phone, params[:text]) if u.phone
+      if u.phone
+        send_sms(params[:handle], u.phone, params[:text])
       end
     end
 
