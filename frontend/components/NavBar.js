@@ -7,7 +7,7 @@ var NavBar = (props) => {
       <img src='logo.png' className='logo' />
       <div className='navbar-element'>
           <div className='navbar-element-info'>Display Name:</div>
-          <input type='text' className='navbar-element-info' onChange={props.updateUsername}/>
+          <input type='text' maxLength={20} className='navbar-element-info' onChange={props.updateUsername}/>
       </div>
     </div>
     </div>
