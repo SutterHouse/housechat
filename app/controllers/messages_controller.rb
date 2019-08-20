@@ -11,7 +11,7 @@ class MessagesController < ApplicationController
   include MessagesControllerHelper
   
   def index
-    render json: Message.all.sort_by(&:redis_primary_id).map(&:serialize)
+    render json: Message.last(50).sort_by(&:redis_primary_id).map(&:serialize)
   end
 
   def create
