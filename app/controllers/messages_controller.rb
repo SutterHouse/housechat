@@ -15,8 +15,6 @@ class MessagesController < ApplicationController
   end
 
   def create
-    puts "USER AGENT:"
-    puts request.headers["User-Agent"]
     return if !isValidBrowser(request.headers)
     return if !isValidHandle(params[:handle])
     return if !isValidMessage(params[:text])
