@@ -1,13 +1,13 @@
 module MessagesControllerHelper
   def isValidBrowser(headers)
-    return headers["User-Agent"].include?("Chrome")
+    user_agent = headers["User-Agent"]
+    return user_agent.include?("Mozilla") || user_agent.include?("Chrome") || user_agent.include?("iPhone")
   end
   def isValidMessage(message)
     if message.length < 1 || message.length > 500
       return false
     end
-    filterList = ['dicks are also what I eat', 'I love to eat dick', 'd i c k', 'soggy biscuit', '8=>', 'donger', 'bbc']
-    return filterList.none?{|phrase| message.include?(phrase)}
+    return true
   end
   def isValidHandle(handle)
     return handle.length > 1 && handle.length <= 20
